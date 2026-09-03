@@ -15,7 +15,7 @@ A Flask + MYSQL Workbench 8.0CE Database employee attendance management system.
 - Leave deduction calculation
 - Attendance status tracking
 ## stack 
-Python, Flask, MySQL, HTML, CSS, Jinja2, Werkzeug.
+Python, Flask, MySQL, HTML, CSS .
 ## Installation
 
 Open PowerShell/Command Prompt in this project folder:
@@ -48,7 +48,7 @@ http://127.0.0.1:5000
 
 
 ## Super Admin LOGIN
-- Username: arpanmaity2601@gmail.com
+- Username: admin@gmail.com
 - Password: admin123
 
 ## Demo HR Login
