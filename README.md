@@ -14,7 +14,8 @@ A Flask + MYSQL Workbench 8.0CE Database employee attendance management system.
 - Leave approval/rejection by HR
 - Leave deduction calculation
 - Attendance status tracking
-
+## stack 
+Python, Flask, MySQL, HTML, CSS, Jinja2, Werkzeug.
 ## Installation
 
 Open PowerShell/Command Prompt in this project folder:
@@ -63,3 +64,12 @@ Change the demo password/secret key before using this in production.
 ## Database
 
 MYSQL Workbench 8.0CE Database `attendance.db` is automatically created the first time the application runs.
+## business Rule
+Annual leave quota: 12 calendar days.
+Leave calculation is inclusive: 10 Sep–12 Sep = 3 days.
+Pending leave is not deducted.
+Approved leave is deducted.
+Overlapping pending/approved leave is blocked.
+Check-out calculates working minutes on the server.
+Less than 4 hours = Half Day; 4 hours or more = Present.
+Approved leave dates are automatically marked On Leave.
