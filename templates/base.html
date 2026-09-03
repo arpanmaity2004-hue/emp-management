@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+        Attendance System
+        {% endblock %}
+    </title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<nav class="navbar">
+
+    <div class="brand">
+        Employee Attendance Management
+    </div>
+
+    {% if session.get('employee_id') %}
+
+    <div class="user-profile">
+
+        <div class="user-info">
+
+            <span class="welcome-text">
+                Welcome,
+            </span>
+
+            <strong>
+                {{ emp.name if emp is defined else session.get('name') }}
+            </strong>
+
+            <span class="user-role">
+
+                {% if session.get('role') == 'admin' %}
+                    Super Admin
+
+                {% elif session.get('role') == 'hr' %}
+                    HR 
+
+                {% else %}
+                    Employee
+                {% endif %}
+
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="navlinks">
+
+        {% if session.get('role') == 'admin' %}
+
+            <a href="{{ url_for('admin_dashboard') }}">
+               Super Admin
+            </a>
+
+        {% elif session.get('role') == 'hr' %}
+
+            <a href="{{ url_for('hr_dashboard') }}">
+                HR Dashboard
+            </a>
+
+        {% else %}
+
+            <a href="{{ url_for('dashboard') }}">
+             Employee Dashboard
+            </a>
+
+            <a href="{{ url_for('leave') }}">
+                Leave
+            </a>
+
+        {% endif %}
+
+        <a href="{{ url_for('logout') }}">
+            Logout
+        </a>
+
+    </div>
+
+    {% endif %}
+
+</nav>
+
+<main class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+        {% for category, message in messages %}
+
+            <div class="alert {{ category }}">
+                {{ message }}
+            </div>
+
+        {% endfor %}
+
+    {% endwith %}
+
+    {% block content %}
+
+    {% endblock %}
+
+</main>
+
+</body>
+
+</html>

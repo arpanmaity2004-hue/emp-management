@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Employee Dashboard{% endblock %}
+{% block content %}
+<h1>Welcome, {{ emp.name }}</h1>
+<p class="muted">{{ emp.department }} | {{ emp.email }}</p>
+
+<div class="cards">
+    <div class="card"><h3>Today's Status</h3><strong>{{ today_att.status if today_att else 'Not Marked' }}</strong></div>
+    <div class="card"><h3>Check In</h3><strong>{{ today_att.check_in.strftime('%I:%M %p') if today_att and today_att.check_in else '--' }}</strong></div>
+    <div class="card"><h3>Check Out</h3><strong>{{ today_att.check_out.strftime('%I:%M %p') if today_att and today_att.check_out else '--' }}</strong></div>
+    <div class="card"><h3>Leave Balance</h3><strong>{{ leave_balance }} days</strong></div>
+</div>
+
+<div class="panel">
+    <h2>Attendance Action</h2>
+    <div class="actions">
+        <form method="POST" action="{{ url_for('check_in') }}"><button class="btn" type="submit">Check In</button></form>
+        <form method="POST" action="{{ url_for('check_out') }}"><button class="btn secondary" type="submit">Check Out</button></form>
+        <a class="btn outline" href="{{ url_for('leave') }}">Apply Leave</a>
+    </div>
+</div>
+
+<div class="panel">
+<h2>Recent Attendance</h2>
+<table>
+<tr><th>Date</th><th>Check In</th><th>Check Out</th><th>Hours</th><th>Status</th></tr>
+{% for a in records %}
+<tr>
+<td>{{ a.attendance_date }}</td>
+<td>{{ a.check_in.strftime('%I:%M %p') if a.check_in else '--' }}</td>
+<td>{{ a.check_out.strftime('%I:%M %p') if a.check_out else '--' }}</td>
+<td>{{ a.working_hours }}</td>
+<td><span class="badge">{{ a.status }}</span></td>
+</tr>
+{% else %}
+<tr><td colspan="5">No attendance records yet.</td></tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

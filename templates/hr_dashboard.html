@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}HR Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>HR Dashboard</h1>
+
+    <p class="muted">
+        Attendance overview for {{ today }}
+    </p>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Employees</h3>
+            <strong>{{ total_employees }}</strong>
+        </div>
+
+        <div class="card">
+            <h3>Total HR</h3>
+            <strong>{{ total_hr }}</strong>
+        </div>
+
+        <div class="card">
+            <h3>Present Today</h3>
+            <strong>{{ present }}</strong>
+        </div>
+
+        <div class="card">
+            <h3>Checked Out</h3>
+            <strong>{{ checked_out }}</strong>
+        </div>
+
+        <div class="card">
+            <h3>Pending Leaves</h3>
+            <strong>{{ pending }}</strong>
+        </div>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Today's Attendance</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Check In</th>
+                    <th>Check Out</th>
+                    <th>Working Hours</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for attendance, employee in today_records %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ employee.name }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ employee.department }}
+                    </td>
+
+                    <td>
+                        {% if attendance.check_in %}
+                            {{ attendance.check_in.strftime("%I:%M %p") }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if attendance.check_out %}
+                            {{ attendance.check_out.strftime("%I:%M %p") }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        {% if attendance.check_in and attendance.check_out %}
+
+                            {% set total_seconds = (
+                                attendance.check_out -
+                                attendance.check_in
+                            ).total_seconds() %}
+
+                            {% set total_minutes = (
+                                total_seconds / 60
+                            ) | round | int %}
+
+                            {% set hours = total_minutes // 60 %}
+
+                            {% set minutes = total_minutes % 60 %}
+
+                            <strong>
+                                {{ hours }} Hours
+                                {{ "%02d"|format(minutes) }} Minutes
+                            </strong>
+
+                        {% else %}
+
+                            --
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if attendance.status == "Present" %}
+
+                            <strong>
+                                Present
+                            </strong>
+
+                        {% elif attendance.status == "Absent" %}
+
+                            <strong>
+                                Absent
+                            </strong>
+
+                        {% else %}
+
+                            {{ attendance.status }}
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+            {% else %}
+
+                <tr>
+                    <td colspan="6">
+                        No attendance marked today.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>Leave Requests</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Leave Type</th>
+                    <th>Dates</th>
+                    <th>Days</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            {% for leave, employee in leaves %}
+
+                <tr>
+
+                    <td>
+                        <strong>
+                            {{ employee.name }}
+                        </strong>
+                    </td>
+
+                    <td>
+                        {{ employee.department }}
+                    </td>
+
+                    <td>
+                        {{ leave.leave_type }}
+                    </td>
+
+                    <td>
+                        {{ leave.start_date }}
+                        to
+                        {{ leave.end_date }}
+                    </td>
+
+                    <td>
+                        {{ leave.days }}
+                    </td>
+
+                    <td>
+                        {{ leave.reason or "--" }}
+                    </td>
+
+                    <td>
+
+                        {% if leave.status == "Pending" %}
+
+                            <strong>
+                                Pending
+                            </strong>
+
+                        {% elif leave.status == "Approved" %}
+
+                            <strong>
+                                Approved
+                            </strong>
+
+                        {% elif leave.status == "Rejected" %}
+
+                            <strong>
+                                Rejected
+                            </strong>
+
+                        {% else %}
+
+                            {{ leave.status }}
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        {% if leave.status == "Pending" %}
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'update_leave',
+                                    leave_id=leave.id,
+                                    action='approve'
+                                ) }}"
+                                style="display:inline;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="small success-btn"
+                                    onclick="return confirm(
+                                        'Are you sure you want to approve this leave?'
+                                    );"
+                                >
+                                    Approve
+                                </button>
+
+                            </form>
+
+                            <form
+                                method="POST"
+                                action="{{ url_for(
+                                    'update_leave',
+                                    leave_id=leave.id,
+                                    action='reject'
+                                ) }}"
+                                style="display:inline;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="small danger-btn"
+                                    onclick="return confirm(
+                                        'Are you sure you want to reject this leave?'
+                                    );"
+                                >
+                                    Reject
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            --
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+            {% else %}
+
+                <tr>
+                    <td colspan="8">
+                        No leave requests.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="panel">
+
+        <h2>HR Information</h2>
+
+        <p>
+            <strong>Name:</strong>
+            {{ emp.name }}
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            {{ emp.email }}
+        </p>
+
+        <p>
+            <strong>Department:</strong>
+            {{ emp.department }}
+        </p>
+
+        <p>
+            <strong>Role:</strong>
+            HR
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
