@@ -48,8 +48,8 @@ http://127.0.0.1:5000
 
 
 ## Super Admin LOGIN
-Username: arpanmaity2601@gmail.com
-Password: admin123
+- Username: arpanmaity2601@gmail.com
+- Password: admin123
 
 ## Demo HR Login
 
